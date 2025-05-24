@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'result_screen.dart';
+import 'result.screen.dart';
 
 class QuizScreen extends StatefulWidget {
   final String category;

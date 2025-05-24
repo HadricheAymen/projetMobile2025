@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'home_screen.dart';
-import 'quiz_setup_screen.dart';
+import 'home.screen.dart';
+import 'quiz_setup.screen.dart';
 import '../models/quiz_result.dart';
 
 class ResultScreen extends StatefulWidget {

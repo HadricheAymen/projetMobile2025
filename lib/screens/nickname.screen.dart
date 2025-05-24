@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'quiz_screen.dart';
+import 'quiz.screen.dart';
 
 class NicknameScreen extends StatefulWidget {
   final String category;
