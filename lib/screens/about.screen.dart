@@ -128,14 +128,16 @@ class AboutScreen extends StatelessWidget {
                                   : size.width * 0.03,
                         ),
                         SizedBox(width: isSmallScreen ? 6 : 12),
-                        Text(
-                          'Développé par: Hadriche Aymen & Mohamed Kamoun',
-                          style: TextStyle(
-                            fontSize:
-                                isSmallScreen
-                                    ? size.width * 0.035
-                                    : size.width * 0.02,
-                            color: colorScheme.onSurface.withOpacity(0.7),
+                        Expanded(
+                          child: Text(
+                            'Développé par: Hadriche Aymen & Mohamed Kamoun',
+                            style: TextStyle(
+                              fontSize:
+                                  isSmallScreen
+                                      ? size.width * 0.035
+                                      : size.width * 0.02,
+                              color: colorScheme.onSurface.withOpacity(0.7),
+                            ),
                           ),
                         ),
                       ],
