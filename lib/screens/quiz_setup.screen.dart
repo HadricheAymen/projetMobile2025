@@ -40,15 +40,20 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Configuration du Quiz',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? size.width * 0.055 : size.width * 0.035,
+          ),
         ),
-        actions: const [
-          SettingsIconButton(),
-        ],
+        actions: const [SettingsIconButton()],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -56,34 +61,33 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.primary.withOpacity(0.05),
+              colorScheme.surface,
+              colorScheme.primary.withOpacity(0.05),
             ],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(isSmallScreen ? 14 : 24),
             child: Column(
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(isSmallScreen ? 18 : 32),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        colorScheme.primary,
+                        colorScheme.primary.withOpacity(0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(
+                      isSmallScreen ? 14 : 20,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.3),
-                        blurRadius: 10,
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: isSmallScreen ? 8 : 12,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -92,10 +96,10 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                     children: [
                       Icon(
                         Icons.tune,
-                        size: 32,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        size: isSmallScreen ? size.width * 0.08 : 32,
+                        color: colorScheme.onPrimary,
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: isSmallScreen ? 10 : 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,19 +107,18 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                             Text(
                               'Configuration',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize:
+                                    isSmallScreen ? size.width * 0.05 : 20,
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                             Text(
                               'Personnalisez votre quiz',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimary
-                                    .withOpacity(0.8),
+                                fontSize:
+                                    isSmallScreen ? size.width * 0.035 : 14,
+                                color: colorScheme.onPrimary.withOpacity(0.8),
                               ),
                             ),
                           ],
@@ -124,7 +127,7 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: isSmallScreen ? 20 : 32),
 
                 Expanded(
                   child: SingleChildScrollView(
@@ -132,76 +135,107 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                       children: [
                         // Category Selection
                         _buildSectionCard(
+                          context: context,
                           title: 'Catégorie',
                           icon: Icons.category,
+                          isSmallScreen: isSmallScreen,
+                          size: size,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 10 : 16,
+                              vertical: isSmallScreen ? 2 : 4,
+                            ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.3),
+                                color: colorScheme.outline.withOpacity(0.3),
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(
+                                isSmallScreen ? 8 : 12,
+                              ),
                             ),
                             child: DropdownButton<String>(
                               value: selectedCategory,
                               hint: const Text('Sélectionner une catégorie'),
                               isExpanded: true,
                               underline: const SizedBox(),
-                              items: categories.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category['id'].toString(),
-                                  child: Text(
-                                    category['name'],
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                );
-                              }).toList(),
+                              style: TextStyle(
+                                fontSize:
+                                    isSmallScreen ? size.width * 0.04 : 14,
+                                color: colorScheme.onSurface,
+                              ),
+                              items:
+                                  categories.map((category) {
+                                    return DropdownMenuItem<String>(
+                                      value: category['id'].toString(),
+                                      child: Text(
+                                        category['name'],
+                                        style: TextStyle(
+                                          fontSize:
+                                              isSmallScreen
+                                                  ? size.width * 0.04
+                                                  : 14,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
                               onChanged: (value) {
                                 SoundService().playClickSound();
                                 setState(() {
                                   selectedCategory = value;
-                                  selectedCategoryName = categories.firstWhere(
-                                    (category) =>
-                                        category['id'].toString() == value,
-                                  )['name'];
+                                  selectedCategoryName =
+                                      categories.firstWhere(
+                                        (category) =>
+                                            category['id'].toString() == value,
+                                      )['name'];
                                 });
                               },
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: isSmallScreen ? 14 : 20),
 
                         // Difficulty Selection
                         _buildSectionCard(
+                          context: context,
                           title: 'Difficulté',
                           icon: Icons.speed,
+                          isSmallScreen: isSmallScreen,
+                          size: size,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 10 : 16,
+                              vertical: isSmallScreen ? 2 : 4,
+                            ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.3),
+                                color: colorScheme.outline.withOpacity(0.3),
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(
+                                isSmallScreen ? 8 : 12,
+                              ),
                             ),
                             child: DropdownButton<String>(
                               value: selectedDifficulty,
                               isExpanded: true,
                               underline: const SizedBox(),
+                              style: TextStyle(
+                                fontSize:
+                                    isSmallScreen ? size.width * 0.04 : 14,
+                                color: colorScheme.onSurface,
+                              ),
                               items: const [
                                 DropdownMenuItem(
-                                    value: 'easy', child: Text('Facile')),
+                                  value: 'easy',
+                                  child: Text('Facile'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 'medium', child: Text('Moyen')),
+                                  value: 'medium',
+                                  child: Text('Moyen'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 'hard', child: Text('Difficile')),
+                                  value: 'hard',
+                                  child: Text('Difficile'),
+                                ),
                               ],
                               onChanged: (value) {
                                 SoundService().playClickSound();
@@ -212,35 +246,50 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: isSmallScreen ? 14 : 20),
 
                         // Question Count Selection
                         _buildSectionCard(
+                          context: context,
                           title: 'Nombre de questions',
                           icon: Icons.quiz,
+                          isSmallScreen: isSmallScreen,
+                          size: size,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 10 : 16,
+                              vertical: isSmallScreen ? 2 : 4,
+                            ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.3),
+                                color: colorScheme.outline.withOpacity(0.3),
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(
+                                isSmallScreen ? 8 : 12,
+                              ),
                             ),
                             child: DropdownButton<int>(
                               value: selectedQuestionCount,
                               isExpanded: true,
                               underline: const SizedBox(),
+                              style: TextStyle(
+                                fontSize:
+                                    isSmallScreen ? size.width * 0.04 : 14,
+                                color: colorScheme.onSurface,
+                              ),
                               items: const [
                                 DropdownMenuItem(
-                                    value: 5, child: Text('5 Questions')),
+                                  value: 5,
+                                  child: Text('5 Questions'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 10, child: Text('10 Questions')),
+                                  value: 10,
+                                  child: Text('10 Questions'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 15, child: Text('15 Questions')),
+                                  value: 15,
+                                  child: Text('15 Questions'),
+                                ),
                               ],
                               onChanged: (value) {
                                 SoundService().playClickSound();
@@ -251,64 +300,74 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: isSmallScreen ? 20 : 32),
 
                         // Next Button
-                        Container(
+                        SizedBox(
                           width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primary,
-                                Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.8),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
                           child: ElevatedButton(
-                            onPressed: selectedCategory != null
-                                ? () {
-                                    SoundService().playClickSound();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => NicknameScreen(
-                                          category: selectedCategory!,
-                                          categoryName: selectedCategoryName,
-                                          difficulty: selectedDifficulty,
-                                          questionCount: selectedQuestionCount,
+                            onPressed:
+                                selectedCategory != null
+                                    ? () {
+                                      SoundService().playClickSound();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => NicknameScreen(
+                                                category: selectedCategory!,
+                                                categoryName:
+                                                    selectedCategoryName,
+                                                difficulty: selectedDifficulty,
+                                                questionCount:
+                                                    selectedQuestionCount,
+                                              ),
                                         ),
-                                      ),
-                                    );
-                                  }
-                                : null,
+                                      );
+                                    }
+                                    : null,
                             style: ElevatedButton.styleFrom(
+                              minimumSize: Size(0, isSmallScreen ? 48 : 56),
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(
+                                  isSmallScreen ? 12 : 16,
+                                ),
                               ),
+                              padding: EdgeInsets.zero,
                             ),
-                            child: Text(
-                              'Suivant',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    colorScheme.primary,
+                                    colorScheme.primary.withOpacity(0.8),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  isSmallScreen ? 12 : 16,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colorScheme.primary.withOpacity(0.3),
+                                    blurRadius: isSmallScreen ? 8 : 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: isSmallScreen ? 48 : 56,
+                                child: Text(
+                                  'Suivant',
+                                  style: TextStyle(
+                                    fontSize:
+                                        isSmallScreen ? size.width * 0.045 : 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onPrimary,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -326,26 +385,28 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
   }
 
   Widget _buildSectionCard({
+    required BuildContext context,
     required String title,
     required IconData icon,
     required Widget child,
+    required bool isSmallScreen,
+    required Size size,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isSmallScreen ? 14 : 20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
-            blurRadius: 8,
+            color: colorScheme.shadow.withOpacity(0.1),
+            blurRadius: isSmallScreen ? 6 : 8,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-        ),
+        border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,29 +414,29 @@ class _QuizSetupScreenState extends State<QuizSetupScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(isSmallScreen ? 6 : 8),
                 ),
                 child: Icon(
                   icon,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
+                  color: colorScheme.primary,
+                  size: isSmallScreen ? size.width * 0.05 : 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: isSmallScreen ? 8 : 12),
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: isSmallScreen ? size.width * 0.045 : 16,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallScreen ? 10 : 16),
           child,
         ],
       ),

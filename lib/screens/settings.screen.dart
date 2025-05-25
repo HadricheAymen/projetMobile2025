@@ -27,13 +27,9 @@ class _SettingsScreenState extends State<SettingsScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
     _animationController.forward();
   }
 
@@ -54,15 +50,23 @@ class _SettingsScreenState extends State<SettingsScreen>
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Paramètres',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? size.width * 0.055 : size.width * 0.035,
+          ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: isSmallScreen ? size.width * 0.05 : 20,
+          ),
           onPressed: () {
             _soundService.playClickSound();
             Navigator.pop(context);
@@ -83,11 +87,11 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
           ),
           child: ListView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(isSmallScreen ? 14 : 20),
             children: [
               // Header
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(isSmallScreen ? 18 : 24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -95,11 +99,11 @@ class _SettingsScreenState extends State<SettingsScreen>
                       colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(isSmallScreen ? 14 : 20),
                   boxShadow: [
                     BoxShadow(
                       color: colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 10,
+                      blurRadius: isSmallScreen ? 8 : 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
@@ -108,10 +112,10 @@ class _SettingsScreenState extends State<SettingsScreen>
                   children: [
                     Icon(
                       Icons.settings,
-                      size: 32,
+                      size: isSmallScreen ? size.width * 0.08 : 32,
                       color: colorScheme.onPrimary,
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: isSmallScreen ? 10 : 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           Text(
                             'Personnalisation',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: isSmallScreen ? size.width * 0.05 : 20,
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onPrimary,
                             ),
@@ -127,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           Text(
                             'Configurez votre expérience',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: isSmallScreen ? size.width * 0.035 : 14,
                               color: colorScheme.onPrimary.withOpacity(0.8),
                             ),
                           ),
@@ -138,17 +142,19 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: isSmallScreen ? 18 : 24),
 
               // Theme Setting
               _buildSettingCard(
-                icon: themeProvider.isDarkMode
-                    ? Icons.dark_mode
-                    : Icons.light_mode,
+                icon:
+                    themeProvider.isDarkMode
+                        ? Icons.dark_mode
+                        : Icons.light_mode,
                 title: 'Mode d\'affichage',
-                subtitle: themeProvider.isDarkMode
-                    ? 'Mode sombre activé'
-                    : 'Mode clair activé',
+                subtitle:
+                    themeProvider.isDarkMode
+                        ? 'Mode sombre activé'
+                        : 'Mode clair activé',
                 trailing: Switch.adaptive(
                   value: themeProvider.isDarkMode,
                   onChanged: (value) {
@@ -158,9 +164,11 @@ class _SettingsScreenState extends State<SettingsScreen>
                   activeColor: colorScheme.primary,
                 ),
                 colorScheme: colorScheme,
+                isSmallScreen: isSmallScreen,
+                size: size,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: isSmallScreen ? 10 : 16),
 
               // Sound Setting
               _buildSettingCard(
@@ -181,16 +189,18 @@ class _SettingsScreenState extends State<SettingsScreen>
                   activeColor: colorScheme.primary,
                 ),
                 colorScheme: colorScheme,
+                isSmallScreen: isSmallScreen,
+                size: size,
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: isSmallScreen ? 22 : 32),
 
               // About Section
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(isSmallScreen ? 14 : 20),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
                   border: Border.all(
                     color: colorScheme.outline.withOpacity(0.2),
                   ),
@@ -203,23 +213,24 @@ class _SettingsScreenState extends State<SettingsScreen>
                         Icon(
                           Icons.info_outline,
                           color: colorScheme.primary,
+                          size: isSmallScreen ? size.width * 0.05 : 20,
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: isSmallScreen ? 8 : 12),
                         Text(
                           'À propos',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: isSmallScreen ? size.width * 0.045 : 18,
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: isSmallScreen ? 8 : 12),
                     Text(
                       'Trivia Quiz App v1.0.0\nUne application de quiz interactive avec des questions variées.',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: isSmallScreen ? size.width * 0.035 : 14,
                         color: colorScheme.onSurface.withOpacity(0.7),
                         height: 1.5,
                       ),
@@ -240,48 +251,51 @@ class _SettingsScreenState extends State<SettingsScreen>
     required String subtitle,
     required Widget trailing,
     required ColorScheme colorScheme,
+    required bool isSmallScreen,
+    required Size size,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
         boxShadow: [
           BoxShadow(
             color: colorScheme.shadow.withOpacity(0.1),
-            blurRadius: 8,
+            blurRadius: isSmallScreen ? 6 : 8,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(
-          color: colorScheme.outline.withOpacity(0.1),
-        ),
+        border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 14 : 20,
+          vertical: isSmallScreen ? 6 : 8,
+        ),
         leading: Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
           decoration: BoxDecoration(
             color: colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
           ),
           child: Icon(
             icon,
             color: colorScheme.primary,
-            size: 24,
+            size: isSmallScreen ? size.width * 0.06 : 24,
           ),
         ),
         title: Text(
           title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: isSmallScreen ? size.width * 0.04 : 16,
             color: colorScheme.onSurface,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: isSmallScreen ? size.width * 0.035 : 14,
             color: colorScheme.onSurface.withOpacity(0.6),
           ),
         ),

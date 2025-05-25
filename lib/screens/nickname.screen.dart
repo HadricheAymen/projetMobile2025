@@ -41,13 +41,14 @@ class _NicknameScreenState extends State<NicknameScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QuizScreen(
-          category: widget.category,
-          categoryName: widget.categoryName,
-          difficulty: widget.difficulty,
-          questionCount: widget.questionCount,
-          nickname: nickname,
-        ),
+        builder:
+            (context) => QuizScreen(
+              category: widget.category,
+              categoryName: widget.categoryName,
+              difficulty: widget.difficulty,
+              questionCount: widget.questionCount,
+              nickname: nickname,
+            ),
       ),
     );
   }
@@ -55,16 +56,16 @@ class _NicknameScreenState extends State<NicknameScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Votre Pseudo',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: w * 0.055),
         ),
-        actions: const [
-          SettingsIconButton(),
-        ],
+        actions: const [SettingsIconButton()],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -79,12 +80,12 @@ class _NicknameScreenState extends State<NicknameScreen> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(w * 0.035),
             child: Column(
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(w * 0.045),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -92,11 +93,11 @@ class _NicknameScreenState extends State<NicknameScreen> {
                         colorScheme.primary.withOpacity(0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(w * 0.035),
                     boxShadow: [
                       BoxShadow(
                         color: colorScheme.primary.withOpacity(0.3),
-                        blurRadius: 10,
+                        blurRadius: w * 0.022,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -105,10 +106,10 @@ class _NicknameScreenState extends State<NicknameScreen> {
                     children: [
                       Icon(
                         Icons.person,
-                        size: 32,
+                        size: w * 0.08,
                         color: colorScheme.onPrimary,
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: w * 0.025),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +117,7 @@ class _NicknameScreenState extends State<NicknameScreen> {
                             Text(
                               'Presque prêt !',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: w * 0.05,
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.onPrimary,
                               ),
@@ -124,7 +125,7 @@ class _NicknameScreenState extends State<NicknameScreen> {
                             Text(
                               'Entrez votre pseudo pour commencer',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: w * 0.035,
                                 color: colorScheme.onPrimary.withOpacity(0.8),
                               ),
                             ),
@@ -134,7 +135,7 @@ class _NicknameScreenState extends State<NicknameScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: w * 0.05),
 
                 Expanded(
                   child: Column(
@@ -142,14 +143,14 @@ class _NicknameScreenState extends State<NicknameScreen> {
                     children: [
                       // Input Field
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(w * 0.045),
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(w * 0.03),
                           boxShadow: [
                             BoxShadow(
                               color: colorScheme.shadow.withOpacity(0.1),
-                              blurRadius: 8,
+                              blurRadius: w * 0.018,
                               offset: const Offset(0, 2),
                             ),
                           ],
@@ -165,117 +166,135 @@ class _NicknameScreenState extends State<NicknameScreen> {
                                 Icon(
                                   Icons.edit,
                                   color: colorScheme.primary,
-                                  size: 20,
+                                  size: w * 0.045,
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: w * 0.015),
                                 Text(
                                   'Pseudo',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: w * 0.04,
                                     fontWeight: FontWeight.w600,
                                     color: colorScheme.onSurface,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: w * 0.025),
                             TextField(
                               controller: _controller,
                               decoration: InputDecoration(
                                 hintText: 'Entrez votre pseudo...',
                                 errorText: _error,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    w * 0.025,
+                                  ),
                                   borderSide: BorderSide(
                                     color: colorScheme.outline.withOpacity(0.3),
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    w * 0.025,
+                                  ),
                                   borderSide: BorderSide(
                                     color: colorScheme.outline.withOpacity(0.3),
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    w * 0.025,
+                                  ),
                                   borderSide: BorderSide(
                                     color: colorScheme.primary,
                                     width: 2,
                                   ),
                                 ),
                                 errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    w * 0.025,
+                                  ),
                                   borderSide: const BorderSide(
                                     color: Colors.red,
                                   ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    w * 0.025,
+                                  ),
                                   borderSide: const BorderSide(
                                     color: Colors.red,
                                     width: 2,
                                   ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: w * 0.03,
+                                  vertical: w * 0.03,
                                 ),
                               ),
                               onSubmitted: (_) => _startQuiz(),
                               textInputAction: TextInputAction.done,
+                              style: TextStyle(fontSize: w * 0.045),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: w * 0.05),
 
                       // Start Button
-                      Container(
+                      SizedBox(
                         width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              colorScheme.primary,
-                              colorScheme.primary.withOpacity(0.8),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: colorScheme.primary.withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
                         child: ElevatedButton(
                           onPressed: _startQuiz,
                           style: ElevatedButton.styleFrom(
+                            minimumSize: Size(0, w * 0.13),
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(w * 0.03),
                             ),
+                            padding: EdgeInsets.zero,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.play_arrow,
-                                color: colorScheme.onPrimary,
-                                size: 24,
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  colorScheme.primary,
+                                  colorScheme.primary.withOpacity(0.8),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Commencer le Quiz',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onPrimary,
+                              borderRadius: BorderRadius.circular(w * 0.03),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.primary.withOpacity(0.3),
+                                  blurRadius: w * 0.022,
+                                  offset: const Offset(0, 4),
                                 ),
+                              ],
+                            ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: w * 0.13,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.play_arrow,
+                                    color: colorScheme.onPrimary,
+                                    size: w * 0.06,
+                                  ),
+                                  SizedBox(width: w * 0.015),
+                                  Text(
+                                    'Commencer le Quiz',
+                                    style: TextStyle(
+                                      fontSize: w * 0.045,
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),

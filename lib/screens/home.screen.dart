@@ -10,18 +10,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
     final colorScheme = Theme.of(context).colorScheme;
     final soundService = SoundService();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Trivia Quiz',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          'Titre',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? size.width * 0.06 : size.width * 0.04,
+          ),
         ),
-        actions: const [
-          SettingsIconButton(),
-        ],
+        actions: const [SettingsIconButton()],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -36,17 +39,19 @@ class HomeScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(isSmallScreen ? 16 : 32),
             child: Column(
               children: [
                 // Header Section
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(
+                    vertical: isSmallScreen ? 16 : 32,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all(isSmallScreen ? 20 : 32),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -65,36 +70,48 @@ class HomeScreen extends StatelessWidget {
                         ),
                         child: Icon(
                           Icons.quiz,
-                          size: 48,
+                          size:
+                              isSmallScreen
+                                  ? size.width * 0.12
+                                  : size.width * 0.08,
                           color: colorScheme.onPrimary,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: isSmallScreen ? 16 : 32),
                       Text(
                         'Bienvenue dans',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize:
+                              isSmallScreen
+                                  ? size.width * 0.04
+                                  : size.width * 0.03,
                           color: colorScheme.onSurface.withOpacity(0.7),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: isSmallScreen ? 4 : 8),
                       Text(
                         'Trivia Quiz',
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize:
+                              isSmallScreen
+                                  ? size.width * 0.06
+                                  : size.width * 0.04,
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: isSmallScreen ? 8 : 16),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Testez vos connaissances avec des questions variées',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize:
+                                isSmallScreen
+                                    ? size.width * 0.035
+                                    : size.width * 0.025,
                             color: colorScheme.onSurface.withOpacity(0.6),
                             height: 1.3,
                           ),
@@ -124,8 +141,9 @@ class HomeScreen extends StatelessWidget {
                           );
                         },
                         useGradient: true,
+                        isSmallScreen: isSmallScreen,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isSmallScreen ? 12 : 24),
                       _buildMenuButton(
                         context: context,
                         icon: Icons.leaderboard,
@@ -140,8 +158,9 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
+                        isSmallScreen: isSmallScreen,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isSmallScreen ? 12 : 24),
                       _buildMenuButton(
                         context: context,
                         icon: Icons.info_outline,
@@ -156,6 +175,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
+                        isSmallScreen: isSmallScreen,
                       ),
                     ],
                   ),
@@ -175,36 +195,38 @@ class HomeScreen extends StatelessWidget {
     required String subtitle,
     required VoidCallback onPressed,
     bool useGradient = false,
+    bool isSmallScreen = false,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: useGradient
-            ? LinearGradient(
-                colors: [
-                  colorScheme.primary,
-                  colorScheme.primary.withOpacity(0.85),
-                ],
-              )
-            : null,
+        gradient:
+            useGradient
+                ? LinearGradient(
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.primary.withOpacity(0.85),
+                  ],
+                )
+                : null,
         color: useGradient ? null : colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: useGradient
-                ? colorScheme.primary.withOpacity(0.3)
-                : colorScheme.shadow.withOpacity(0.08),
+            color:
+                useGradient
+                    ? colorScheme.primary.withOpacity(0.3)
+                    : colorScheme.shadow.withOpacity(0.08),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: useGradient
-            ? null
-            : Border.all(
-                color: colorScheme.outline.withOpacity(0.15),
-              ),
+        border:
+            useGradient
+                ? null
+                : Border.all(color: colorScheme.outline.withOpacity(0.15)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -212,26 +234,31 @@ class HomeScreen extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 12 : 16,
+              vertical: isSmallScreen ? 10 : 14,
+            ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: useGradient
-                        ? colorScheme.onPrimary.withOpacity(0.2)
-                        : colorScheme.primary.withOpacity(0.1),
+                    color:
+                        useGradient
+                            ? colorScheme.onPrimary.withOpacity(0.2)
+                            : colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     icon,
-                    color: useGradient
-                        ? colorScheme.onPrimary
-                        : colorScheme.primary,
+                    color:
+                        useGradient
+                            ? colorScheme.onPrimary
+                            : colorScheme.primary,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: isSmallScreen ? 8 : 16),
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -240,21 +267,23 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: isSmallScreen ? 14 : 15,
                           fontWeight: FontWeight.w600,
-                          color: useGradient
-                              ? colorScheme.onPrimary
-                              : colorScheme.onSurface,
+                          color:
+                              useGradient
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: isSmallScreen ? 4 : 2),
                       Text(
                         subtitle,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: useGradient
-                              ? colorScheme.onPrimary.withOpacity(0.8)
-                              : colorScheme.onSurface.withOpacity(0.6),
+                          fontSize: isSmallScreen ? 12 : 12,
+                          color:
+                              useGradient
+                                  ? colorScheme.onPrimary.withOpacity(0.8)
+                                  : colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -262,9 +291,10 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: useGradient
-                      ? colorScheme.onPrimary.withOpacity(0.7)
-                      : colorScheme.onSurface.withOpacity(0.4),
+                  color:
+                      useGradient
+                          ? colorScheme.onPrimary.withOpacity(0.7)
+                          : colorScheme.onSurface.withOpacity(0.4),
                   size: 16,
                 ),
               ],

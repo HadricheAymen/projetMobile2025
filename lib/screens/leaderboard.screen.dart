@@ -35,10 +35,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       isLoading = true;
     });
 
-    // Fetch categories from API
     await _fetchCategories();
-
-    // Load quiz results
     await _loadResults();
 
     setState(() {
@@ -72,9 +69,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final prefs = await SharedPreferences.getInstance();
     final results = prefs.getStringList('quiz_results') ?? [];
 
-    final loadedResults = results
-        .map((result) => QuizResult.fromJson(json.decode(result)))
-        .toList();
+    final loadedResults =
+        results
+            .map((result) => QuizResult.fromJson(json.decode(result)))
+            .toList();
 
     setState(() {
       allResults = loadedResults;
@@ -86,38 +84,31 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   void _applyFilters() {
     setState(() {
-      filteredResults = allResults.where((result) {
-        // Apply category filter
-        if (selectedCategory != 'All') {
-          // Find the category with matching name
-          final category = categories.firstWhere(
-            (cat) => cat['name'] == selectedCategory,
-            orElse: () => {'id': 0, 'name': 'All'},
-          );
-
-          // Convert category ID to string for comparison
-          final categoryId = category['id'].toString();
-
-          // Compare with the stored category ID
-          if (category['name'] != 'All' && result.category != categoryId) {
-            return false;
-          }
-        }
-
-        // Apply difficulty filter
-        if (selectedDifficulty != 'All' &&
-            result.difficulty != selectedDifficulty) {
-          return false;
-        }
-
-        // Apply question count filter
-        if (selectedQuestionCount != 0 &&
-            result.totalQuestions != selectedQuestionCount) {
-          return false;
-        }
-
-        return true;
-      }).toList();
+      filteredResults =
+          allResults.where((result) {
+            // Apply category filter
+            if (selectedCategory != 'All') {
+              final category = categories.firstWhere(
+                (cat) => cat['name'] == selectedCategory,
+                orElse: () => {'id': 0, 'name': 'All'},
+              );
+              final categoryId = category['id'].toString();
+              if (category['name'] != 'All' && result.category != categoryId) {
+                return false;
+              }
+            }
+            // Apply difficulty filter
+            if (selectedDifficulty != 'All' &&
+                result.difficulty != selectedDifficulty) {
+              return false;
+            }
+            // Apply question count filter
+            if (selectedQuestionCount != 0 &&
+                result.totalQuestions != selectedQuestionCount) {
+              return false;
+            }
+            return true;
+          }).toList();
 
       // Sort by score (highest first)
       filteredResults.sort((a, b) => b.score.compareTo(a.score));
@@ -125,43 +116,40 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Future<void> _clearAllResults() async {
-    // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Results'),
-        content: const Text(
-          'Are you sure you want to delete all quiz results? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Clear All Results'),
+            content: const Text(
+              'Are you sure you want to delete all quiz results? This action cannot be undone.',
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed != true) return;
 
-    // Clear the data
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('quiz_results');
 
-    // Refresh the screen
     setState(() {
       allResults = [];
       filteredResults = [];
     });
 
-    // Show confirmation
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('All quiz results have been cleared')),
@@ -170,10 +158,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   String getCategoryName(String categoryValue) {
-    // Si c'est déjà un nom de catégorie (nouveau format), on le retourne directement
-    // Si c'est un ID (ancien format), on essaie de le convertir
     try {
-      // Vérifier si c'est un nombre (ID)
       final id = int.tryParse(categoryValue);
       if (id != null) {
         final category = categories.firstWhere(
@@ -182,7 +167,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         );
         return category['name'];
       } else {
-        // C'est déjà un nom de catégorie
         return categoryValue;
       }
     } catch (e) {
@@ -192,153 +176,288 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Classement',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? size.width * 0.055 : size.width * 0.035,
+          ),
         ),
-        actions: const [
-          SettingsIconButton(),
-        ],
+        actions: const [SettingsIconButton()],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  // Filter controls
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: selectedCategory,
-                          hint: const Text('Category'),
-                          items: categories.map((category) {
-                            return DropdownMenuItem<String>(
-                              value: category['name'],
-                              child: Text(
-                                category['name'],
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedCategory = value!;
-                              _applyFilters();
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: selectedDifficulty,
-                          hint: const Text('Difficulty'),
-                          items: difficulties.map((difficulty) {
-                            return DropdownMenuItem<String>(
-                              value: difficulty,
-                              child: Text(
-                                difficulty.capitalize(),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedDifficulty = value!;
-                              _applyFilters();
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colorScheme.surface,
+              colorScheme.primary.withOpacity(0.05),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(isSmallScreen ? 14 : 24),
+            child: Column(
+              children: [
+                // Filters
+                _buildFilters(colorScheme, size, isSmallScreen),
+                SizedBox(height: isSmallScreen ? 10 : 18),
+                Text(
+                  'Top Scores',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize:
+                        isSmallScreen ? size.width * 0.06 : size.width * 0.04,
                   ),
-                  const SizedBox(height: 8),
-                  DropdownButton<int>(
-                    value: selectedQuestionCount,
-                    hint: const Text('Question Count'),
-                    items: questionCounts.map((count) {
-                      return DropdownMenuItem<int>(
-                        value: count,
-                        child: Text(
-                          count == 0 ? 'All' : count.toString(),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedQuestionCount = value!;
-                        _applyFilters();
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Top Scores',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Results list
-                  Expanded(
-                    child: filteredResults.isEmpty
-                        ? const Center(child: Text('No results found'))
-                        : ListView.builder(
+                ),
+                SizedBox(height: isSmallScreen ? 6 : 12),
+                Expanded(
+                  child:
+                      isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : filteredResults.isEmpty
+                          ? const Center(child: Text('No results found'))
+                          : ListView.separated(
                             itemCount: filteredResults.length,
+                            separatorBuilder:
+                                (_, __) =>
+                                    SizedBox(height: isSmallScreen ? 6 : 12),
                             itemBuilder: (context, index) {
                               final result = filteredResults[index];
                               return Card(
                                 elevation: 2,
-                                margin: const EdgeInsets.symmetric(
-                                  vertical: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    isSmallScreen ? 12 : 18,
+                                  ),
                                 ),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    child: Text('${index + 1}'),
+                                    backgroundColor: colorScheme.primary
+                                        .withOpacity(0.1),
+                                    radius:
+                                        isSmallScreen
+                                            ? size.width * 0.045
+                                            : size.width * 0.03,
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(
+                                        fontSize:
+                                            isSmallScreen
+                                                ? size.width * 0.045
+                                                : size.width * 0.03,
+                                      ),
+                                    ),
                                   ),
                                   title: Text(
                                     '${result.nickname}: ${result.score}/${result.totalQuestions}',
-                                    style: const TextStyle(
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          isSmallScreen
+                                              ? size.width * 0.045
+                                              : size.width * 0.03,
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'Category: ${getCategoryName(result.category)}\n'
-                                    'Difficulty: ${result.difficulty.capitalize()}\n'
+                                    'Catégorie: ${getCategoryName(result.category)}\n'
+                                    'Difficulté: ${result.difficulty.capitalize()}\n'
                                     'Date: ${result.timestamp.toLocal().toString().substring(0, 16)}',
+                                    style: TextStyle(
+                                      fontSize:
+                                          isSmallScreen
+                                              ? size.width * 0.032
+                                              : size.width * 0.02,
+                                    ),
                                   ),
                                   isThreeLine: true,
                                 ),
                               );
                             },
                           ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: ElevatedButton.icon(
-                      onPressed: _clearAllResults,
-                      icon: const Icon(
-                        Icons.delete_forever,
-                        color: Colors.red,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: isSmallScreen ? 10 : 18),
+                  child: ElevatedButton.icon(
+                    onPressed: _clearAllResults,
+                    icon: Icon(
+                      Icons.delete_forever,
+                      color: Colors.red,
+                      size:
+                          isSmallScreen ? size.width * 0.06 : size.width * 0.04,
+                    ),
+                    label: Text(
+                      'Reset All Results',
+                      style: TextStyle(
+                        fontSize:
+                            isSmallScreen
+                                ? size.width * 0.04
+                                : size.width * 0.025,
                       ),
-                      label: const Text('Reset All Results'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      backgroundColor: colorScheme.surface,
+                      side: const BorderSide(color: Colors.red),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isSmallScreen ? 16 : 32,
+                        vertical: isSmallScreen ? 10 : 16,
                       ),
                     ),
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilters(ColorScheme colorScheme, Size size, bool isSmallScreen) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: selectedCategory,
+                isDense: true,
+                isExpanded: true,
+                dropdownColor:
+                    colorScheme.surface, // <-- Set dropdown background
+                decoration: InputDecoration(
+                  labelText: 'Catégorie',
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen ? 6 : 12,
+                    vertical: isSmallScreen ? 8 : 14,
+                  ),
+                ),
+                style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? size.width * 0.04 : size.width * 0.025,
+                  color: colorScheme.onSurface, // <-- Set text color
+                ),
+                items:
+                    categories.map<DropdownMenuItem<String>>((category) {
+                      return DropdownMenuItem<String>(
+                        value: category['name'],
+                        child: Text(
+                          category['name'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize:
+                                isSmallScreen
+                                    ? size.width * 0.04
+                                    : size.width * 0.025,
+                            color: colorScheme.onSurface, // <-- Set text color
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCategory = value!;
+                    _applyFilters();
+                  });
+                },
               ),
             ),
+            SizedBox(width: isSmallScreen ? 6 : 12),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: selectedDifficulty,
+                isDense: true,
+                isExpanded: true,
+                dropdownColor:
+                    colorScheme.surface, // <-- Set dropdown background
+                decoration: InputDecoration(
+                  labelText: 'Difficulté',
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen ? 6 : 12,
+                    vertical: isSmallScreen ? 8 : 14,
+                  ),
+                ),
+                style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? size.width * 0.04 : size.width * 0.025,
+                  color: colorScheme.onSurface, // <-- Set text color
+                ),
+                items:
+                    difficulties.map((difficulty) {
+                      return DropdownMenuItem<String>(
+                        value: difficulty,
+                        child: Text(
+                          difficulty.capitalize(),
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize:
+                                isSmallScreen
+                                    ? size.width * 0.04
+                                    : size.width * 0.025,
+                            color: colorScheme.onSurface, // <-- Set text color
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedDifficulty = value!;
+                    _applyFilters();
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: isSmallScreen ? 6 : 12),
+        DropdownButtonFormField<int>(
+          value: selectedQuestionCount,
+          dropdownColor: colorScheme.surface,
+          decoration: InputDecoration(
+            labelText: 'Nombre de questions',
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 10 : 18,
+              vertical: isSmallScreen ? 8 : 14,
+            ),
+          ),
+          style: TextStyle(
+            fontSize: isSmallScreen ? size.width * 0.04 : size.width * 0.025,
+          ),
+          items:
+              questionCounts.map((count) {
+                return DropdownMenuItem<int>(
+                  value: count,
+                  child: Text(
+                    count == 0 ? 'All' : count.toString(),
+                    style: TextStyle(
+                      fontSize:
+                          isSmallScreen
+                              ? size.width * 0.04
+                              : size.width * 0.025,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                );
+              }).toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedQuestionCount = value!;
+              _applyFilters();
+            });
+          },
+        ),
+      ],
     );
   }
 }
@@ -346,6 +465,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 // Extension to capitalize the first letter of a string
 extension StringExtension on String {
   String capitalize() {
+    if (isEmpty) return this;
     return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

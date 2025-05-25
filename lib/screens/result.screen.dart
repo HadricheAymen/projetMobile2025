@@ -60,209 +60,355 @@ class _ResultScreenState extends State<ResultScreen> {
     final prefs = await SharedPreferences.getInstance();
     final results = prefs.getStringList('quiz_results') ?? [];
     setState(() {
-      pastResults = results
-          .map((result) => QuizResult.fromJson(json.decode(result)))
-          .toList()
-          .reversed
-          .toList(); // Show newest first
+      pastResults =
+          results
+              .map((result) => QuizResult.fromJson(json.decode(result)))
+              .toList()
+              .reversed
+              .toList(); // Show newest first
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
+    final isSmallScreen = w < 600;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Résultats',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: w * 0.055),
         ),
-        actions: const [
-          SettingsIconButton(),
-        ],
+        actions: const [SettingsIconButton()],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              '${widget.nickname}\'s Score: ${widget.score}/${widget.totalQuestions}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Past Results:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: pastResults.length,
-                itemBuilder: (context, index) {
-                  final result = pastResults[index];
-                  return ListTile(
-                    title: Text(
-                      '${result.nickname}: ${result.score}/${result.totalQuestions}',
-                    ),
-                    subtitle: Text(
-                      'Category: ${result.category}, Difficulty: ${result.difficulty}, '
-                      '${result.timestamp.toLocal().toString().substring(0, 16)}',
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Question Review:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.questions.length,
-                itemBuilder: (context, index) {
-                  final question = widget.questions[index];
-                  return ListTile(
-                    title: Text(question['question']),
-                    subtitle: Text(
-                      'Correct Answer: ${question['correct_answer']}',
-                      style: const TextStyle(color: Colors.green),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Row(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colorScheme.surface,
+              colorScheme.primary.withOpacity(0.05),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(w * 0.035),
+            child: Column(
               children: [
-                Expanded(
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .shadow
-                              .withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
+                // Header Card (keep as is)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(w * 0.03),
+                  margin: EdgeInsets.only(bottom: w * 0.03),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary,
+                        colorScheme.primary.withOpacity(0.8),
                       ],
-                      border: Border.all(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withOpacity(0.2),
-                      ),
                     ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        SoundService().playClickSound();
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomeScreen()),
-                          (route) => route.isFirst,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(w * 0.025),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: w * 0.018,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.emoji_events,
+                        color: colorScheme.onPrimary,
+                        size: w * 0.08,
+                      ),
+                      SizedBox(height: w * 0.015),
+                      Text(
+                        'Bravo, ${widget.nickname} !',
+                        style: TextStyle(
+                          fontSize: w * 0.045,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimary,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.home,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Accueil',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
+                      SizedBox(height: w * 0.008),
+                      Text(
+                        'Score: ${widget.score}/${widget.totalQuestions}',
+                        style: TextStyle(
+                          fontSize: w * 0.035,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onPrimary,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
+                      SizedBox(height: w * 0.005),
+                      Text(
+                        'Catégorie: ${widget.categoryName} | Difficulté: ${widget.difficulty}',
+                        style: TextStyle(
+                          fontSize: w * 0.028,
+                          color: colorScheme.onPrimary.withOpacity(0.85),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 16),
+
+                // Split the remaining space equally between history and correction
                 Expanded(
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                  child: Column(
+                    children: [
+                      // History (top half)
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(w * 0.025),
+                          margin: EdgeInsets.only(bottom: w * 0.015),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(w * 0.03),
+                            boxShadow: [
+                              BoxShadow(
+                                color: colorScheme.shadow.withOpacity(0.08),
+                                blurRadius: w * 0.018,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Historique',
+                                style: TextStyle(
+                                  fontSize: w * 0.045,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              SizedBox(height: w * 0.015),
+                              Expanded(
+                                child:
+                                    pastResults.isEmpty
+                                        ? Center(
+                                          child: Text(
+                                            'Aucun résultat',
+                                            style: TextStyle(
+                                              fontSize: w * 0.035,
+                                              color: colorScheme.onSurface
+                                                  .withOpacity(0.7),
+                                            ),
+                                          ),
+                                        )
+                                        : ListView.builder(
+                                          itemCount: pastResults.length,
+                                          itemBuilder: (context, index) {
+                                            final result = pastResults[index];
+                                            return ListTile(
+                                              dense: true,
+                                              contentPadding: EdgeInsets.zero,
+                                              leading: CircleAvatar(
+                                                backgroundColor: colorScheme
+                                                    .primary
+                                                    .withOpacity(0.1),
+                                                radius: w * 0.035,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    fontSize: w * 0.03,
+                                                    color: colorScheme.primary,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              title: Text(
+                                                '${result.nickname}: ${result.score}/${result.totalQuestions}',
+                                                style: TextStyle(
+                                                  fontSize: w * 0.032,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: colorScheme.onSurface,
+                                                ),
+                                              ),
+                                              subtitle: Text(
+                                                'Cat: ${result.category}\nDif: ${result.difficulty}\n${result.timestamp.toLocal().toString().substring(0, 16)}',
+                                                style: TextStyle(
+                                                  fontSize: w * 0.025,
+                                                  color: colorScheme.onSurface
+                                                      .withOpacity(0.7),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        SoundService().playClickSound();
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuizSetupScreen(),
+                      ),
+                      // Correction (bottom half)
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(w * 0.025),
+                          margin: EdgeInsets.only(top: w * 0.015),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(w * 0.03),
+                            boxShadow: [
+                              BoxShadow(
+                                color: colorScheme.shadow.withOpacity(0.08),
+                                blurRadius: w * 0.018,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          (route) => route.isFirst,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Correction',
+                                style: TextStyle(
+                                  fontSize: w * 0.045,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              SizedBox(height: w * 0.015),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: widget.questions.length,
+                                  itemBuilder: (context, index) {
+                                    final question = widget.questions[index];
+                                    return ListTile(
+                                      dense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                      title: Text(
+                                        question['question'],
+                                        style: TextStyle(
+                                          fontSize: w * 0.032,
+                                          color: colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        'Bonne réponse: ${question['correct_answer']}',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontSize: w * 0.028,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.refresh,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Rejouer',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
+                ),
+
+                SizedBox(height: w * 0.05),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          SoundService().playClickSound();
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            ),
+                            (route) => route.isFirst,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(0, w * 0.12),
+                          backgroundColor: colorScheme.surface,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(w * 0.03),
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.home,
+                              color: colorScheme.primary,
+                              size: w * 0.06,
+                            ),
+                            SizedBox(width: w * 0.015),
+                            Text(
+                              'Accueil',
+                              style: TextStyle(
+                                fontSize: w * 0.04,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: w * 0.03),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          SoundService().playClickSound();
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const QuizSetupScreen(),
+                            ),
+                            (route) => route.isFirst,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(0, w * 0.12),
+                          backgroundColor: colorScheme.primary,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(w * 0.03),
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.refresh,
+                              color: colorScheme.onPrimary,
+                              size: w * 0.06,
+                            ),
+                            SizedBox(width: w * 0.015),
+                            Text(
+                              'Rejouer',
+                              style: TextStyle(
+                                fontSize: w * 0.04,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
