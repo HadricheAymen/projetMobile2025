@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'home.screen.dart';
 import 'quiz_setup.screen.dart';
 import '../models/quiz_result.dart';
+import '../widgets/settings_icon_button.dart';
+import '../services/sound_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final int score;
@@ -11,6 +13,7 @@ class ResultScreen extends StatefulWidget {
   final List<dynamic> questions;
   final String nickname;
   final String category;
+  final String categoryName;
   final String difficulty;
 
   const ResultScreen({
@@ -20,6 +23,7 @@ class ResultScreen extends StatefulWidget {
     required this.questions,
     required this.nickname,
     required this.category,
+    required this.categoryName,
     required this.difficulty,
   });
 
@@ -43,7 +47,7 @@ class _ResultScreenState extends State<ResultScreen> {
       nickname: widget.nickname,
       score: widget.score,
       totalQuestions: widget.totalQuestions,
-      category: widget.category,
+      category: widget.categoryName,
       difficulty: widget.difficulty,
       timestamp: DateTime.now(),
     );
@@ -56,19 +60,26 @@ class _ResultScreenState extends State<ResultScreen> {
     final prefs = await SharedPreferences.getInstance();
     final results = prefs.getStringList('quiz_results') ?? [];
     setState(() {
-      pastResults =
-          results
-              .map((result) => QuizResult.fromJson(json.decode(result)))
-              .toList()
-              .reversed
-              .toList(); // Show newest first
+      pastResults = results
+          .map((result) => QuizResult.fromJson(json.decode(result)))
+          .toList()
+          .reversed
+          .toList(); // Show newest first
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Results')),
+      appBar: AppBar(
+        title: const Text(
+          'Résultats',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: const [
+          SettingsIconButton(),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -119,28 +130,137 @@ class _ResultScreenState extends State<ResultScreen> {
                 },
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const QuizSetupScreen(),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withOpacity(0.2),
+                      ),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        SoundService().playClickSound();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()),
+                          (route) => route.isFirst,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.home,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Accueil',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  (route) => route.isFirst,
-                );
-              },
-              child: const Text('Play Again'),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => route.isFirst,
-                );
-              },
-              child: const Text('Back to Home'),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        SoundService().playClickSound();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizSetupScreen(),
+                          ),
+                          (route) => route.isFirst,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.refresh,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Rejouer',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

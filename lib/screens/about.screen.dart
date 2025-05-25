@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/settings_icon_button.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -6,7 +7,15 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('About')),
+      appBar: AppBar(
+        title: const Text(
+          'À propos',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: const [
+          SettingsIconButton(),
+        ],
+      ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
