@@ -5,6 +5,7 @@ import 'dart:async';
 import 'result.screen.dart';
 import '../widgets/settings_icon_button.dart';
 import '../services/sound_service.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class QuizScreen extends StatefulWidget {
   final String category;
@@ -34,6 +35,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Timer? timer;
   int timeLeft = 30;
   List<String> currentAnswers = [];
+  final HtmlUnescape unescape = HtmlUnescape();
 
   @override
   void initState() {
@@ -306,7 +308,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         Expanded(
                           child: Center(
                             child: Text(
-                              question['question'],
+                              unescape.convert(question['question']),
                               style: TextStyle(
                                 fontSize:
                                     isSmallScreen ? size.width * 0.045 : 18,
@@ -429,7 +431,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                         ),
                                         Expanded(
                                           child: Text(
-                                            answer,
+                                            unescape.convert(answer),
                                             style: TextStyle(
                                               fontSize:
                                                   isSmallScreen

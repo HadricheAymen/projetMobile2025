@@ -6,76 +6,67 @@ class SoundService {
   factory SoundService() => _instance;
   SoundService._internal();
 
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _effectsPlayer = AudioPlayer(); // pour effets
+  final AudioPlayer _startPlayer = AudioPlayer(); // pour start.mp3
   final SettingsService _settingsService = SettingsService();
 
-  // Play correct answer sound
   Future<void> playCorrectSound() async {
     final soundEnabled = await _settingsService.getSoundEnabled();
     if (soundEnabled) {
       try {
-        print('Playing correct sound');
-        await _audioPlayer.play(AssetSource('sounds/correct.mp3'));
+        await _effectsPlayer.play(AssetSource('sounds/correct.mp3'));
       } catch (e) {
-        // Fallback: use a simple beep or do nothing
-        print('Could not play correct sound: $e');
+        print('Erreur lecture correct: $e');
       }
-    } else {
-      // If sound is disabled, do nothing
-      print('Sound is disabled, not playing correct sound');
     }
   }
 
-  // Play incorrect answer sound
   Future<void> playIncorrectSound() async {
     final soundEnabled = await _settingsService.getSoundEnabled();
     if (soundEnabled) {
       try {
-        print('Playing incorrect sound');
-        await _audioPlayer.play(AssetSource('sounds/incorrect.mp3'));
+        await _effectsPlayer.play(AssetSource('sounds/incorrect.mp3'));
       } catch (e) {
-        print('Could not play incorrect sound: $e');
+        print('Erreur lecture incorrect: $e');
       }
-    } else {
-      // If sound is disabled, do nothing
-      print('Sound is disabled, not playing incorrect sound');
     }
   }
 
-  // Play button click sound
   Future<void> playClickSound() async {
     final soundEnabled = await _settingsService.getSoundEnabled();
     if (soundEnabled) {
       try {
-        print('Playing click sound');
-        await _audioPlayer.play(AssetSource('sounds/click.mp3'));
+        await _effectsPlayer.play(AssetSource('sounds/click.mp3'));
       } catch (e) {
-        print('Could not play click sound: $e');
+        print('Erreur lecture clic: $e');
       }
-    } else {
-      // If sound is disabled, do nothing
-      print('Sound is disabled, not playing click sound');
     }
   }
 
-  // Play quiz start sound
-  Future<void> playStartSound() async {
+  Future<void> playStartSoundLoop() async {
     final soundEnabled = await _settingsService.getSoundEnabled();
     if (soundEnabled) {
       try {
-        print('Playing start sound');
-        await _audioPlayer.play(AssetSource('sounds/start.mp3'));
+        await _startPlayer.setReleaseMode(ReleaseMode.loop);
+        await _startPlayer.play(AssetSource('sounds/start.mp3'));
+        print('Son start lancé en boucle');
       } catch (e) {
-        print('Could not play start sound: $e');
+        print('Erreur lecture start: $e');
       }
-    } else {
-      // If sound is disabled, do nothing
-      print('Sound is disabled, not playing start sound');
     }
   }
 
-  // Dispose audio player
+  // Future<void> stopStartSound() async {
+  //   try {
+  //     await _startPlayer.stop();
+  //     print('Son start arrêté');
+  //   } catch (e) {
+  //     print('Erreur arrêt son start: $e');
+  //   }
+  // }
+
   void dispose() {
-    _audioPlayer.dispose();
+    //_effectsPlayer.dispose();
+    //_startPlayer.dispose();
   }
 }

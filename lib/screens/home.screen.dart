@@ -5,8 +5,19 @@ import 'leaderboard.screen.dart';
 import '../widgets/settings_icon_button.dart';
 import '../services/sound_service.dart';
 
-class HomeScreen extends StatelessWidget {
+
+
+class HomeScreen extends StatefulWidget {
+  
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +29,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Titre',
+          'Trivia Quiz',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: isSmallScreen ? size.width * 0.06 : size.width * 0.04,
@@ -304,4 +315,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+
 }
