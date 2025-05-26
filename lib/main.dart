@@ -44,7 +44,7 @@ class _QuizAppState extends State<QuizApp> {
         if (_soundEnabled) {
           await _soundService.playStartSoundLoop();
         } else {
-          //await _soundService.stopStartSound();
+          await _soundService.stopStartSound();
         }
       }
       await Future.delayed(const Duration(seconds: 1));

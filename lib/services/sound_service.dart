@@ -1,3 +1,9 @@
+// IMPORTANT :
+// SoundService est un singleton qui gère la musique de fond et les effets sonores.
+// La musique de fond (start.mp3) NE DOIT PAS être stoppée ou disposée ailleurs que dans SoundService.
+// Seul SoundService contrôle le démarrage/arrêt de la musique de fond selon le paramètre utilisateur.
+// Les écrans doivent uniquement utiliser les méthodes publiques pour jouer les effets.
+
 import 'package:audioplayers/audioplayers.dart';
 import 'settings_service.dart';
 
@@ -56,14 +62,14 @@ class SoundService {
     }
   }
 
-  // Future<void> stopStartSound() async {
-  //   try {
-  //     await _startPlayer.stop();
-  //     print('Son start arrêté');
-  //   } catch (e) {
-  //     print('Erreur arrêt son start: $e');
-  //   }
-  // }
+  Future<void> stopStartSound() async {
+    try {
+      await _startPlayer.stop();
+      print('Son start arrêté');
+    } catch (e) {
+      print('Erreur arrêt son start: $e');
+    }
+  }
 
   void dispose() {
     //_effectsPlayer.dispose();
